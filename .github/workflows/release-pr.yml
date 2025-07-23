@@ -14,6 +14,6 @@ jobs:
 
       - name: 깃허브 CLI
         run: |
-          gh api /repos/akfakf0509/release-pr-action/pulls -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28"
+          gh api /repos/akfakf0509/release-pr-action/pulls -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" -f 'base=main' -f 'head=akfakf0509:develop'
         env:
           GH_TOKEN: ${{ github.token }}
