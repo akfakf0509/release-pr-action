@@ -6,7 +6,7 @@ on:
       - develop
 
 permissions:
-  pull-requests: write
+  pull-requests: none
 
 jobs:
   create_release_pr:
