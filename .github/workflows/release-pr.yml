@@ -1,6 +1,6 @@
 name: 배포 병합 요청 생성
 
-on: 
+on:
   push:
     branches:
       - develop
@@ -9,34 +9,48 @@ permissions:
   pull-requests: write
 
 jobs:
-  create_release_pr:
+  get-pr:
     runs-on: ubuntu-latest
+    outputs:
+      number: ${{ steps.result.number }}
     steps:
       - name: Get Release PR
-        id: get-pr
+        id: get
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          PR_NUMBER=$(gh api /repos/${{ github.repository }}/pulls \
+          NUMBER=$(gh api /repos/${{ github.repository }}/pulls \
             -f head=akfakf0509:develop \
             -f base=main \
             -f state=open \
             --method GET \
             --jq .[0].number)
-          echo "pr-number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "number=$NUMBER" >> "$GITHUB_OUTPUT"
       - name: Create Release PR if not exist
-        id: create-pr
-        if: ${{ !steps.get-pr.outputs.pr-number }}
+        id: create
+        if: ${{ !steps.get.outputs.number }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          PR_NUMBER=$(gh api /repos/${{ github.repository }}/pulls \
+          NUMBER=$(gh api /repos/${{ github.repository }}/pulls \
             -f title="release: New features and fixes" \
             -f head=develop \
             -f base=main
             --jq .number)
-          echo "pr-number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
-      - name: Echo result PR number
+          echo "number=$NUMBER" >> "$GITHUB_OUTPUT"
+      - name: Get Result PR number
+        id: result
         run: |
-          echo "get-pr.pr-number: ${{ steps.get-pr.outputs.pr-number }}"
-          echo "create-pr.pr-number: ${{ steps.create-pr.outputs.pr-number }}"
+          echo "number=${{ steps.get.outputs.number || steps.create.outputs.number }}" >> "$GITHUB_OUTPUT"
+  bind-assigneers:
+    runs-on: ubuntu-latest
+    needs: get-pr
+    steps:
+      - name: Get Commit authors
+        id: authors
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NICKNAMES=$(gh api /repos/${{ github.repository }}/pulls/${{ needs.get-pr.outputs.number }}/commits \
+            --jq '[.[].author.login | select(.)] | unique')
+          echo "$NICKNAMES"
