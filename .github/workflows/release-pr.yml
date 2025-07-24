@@ -46,11 +46,17 @@ jobs:
     runs-on: ubuntu-latest
     needs: get-pr
     steps:
-      - name: Get Commit authors
+      - name: Get PR Commit authors
         id: authors
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           NICKNAMES=$(gh api /repos/${{ github.repository }}/pulls/${{ needs.get-pr.outputs.number }}/commits \
             --jq '[.[].author.login | select(.)] | unique')
-          echo "$NICKNAMES"
+          echo "nicknames=$NICKNAMES" >> "$GITHUB_OUTPUT"
+      - name: Bind PR assignees
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api /repos/${{ github.repository }}/issues/${{ needs.get-pr.outputs.number }}/assignees \
+            -f assignees=${{ steps.authors.outputs.nicknames }}
