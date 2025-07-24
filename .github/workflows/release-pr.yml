@@ -8,6 +8,9 @@ on:
 permissions:
   pull-requests: write
 
+env:
+  GITHUB_TOKEN: ${{ github.token }}
+
 jobs:
   get-pr:
     runs-on: ubuntu-latest
@@ -16,8 +19,6 @@ jobs:
     steps:
       - name: Get Release PR
         id: get
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           NUMBER=$(gh api /repos/${{ github.repository }}/pulls \
             -f head=akfakf0509:develop \
@@ -29,8 +30,6 @@ jobs:
       - name: Create Release PR if not exist
         id: create
         if: ${{ !steps.get.outputs.number }}
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           NUMBER=$(gh api /repos/${{ github.repository }}/pulls \
             -f title="release: New features and fixes" \
@@ -49,15 +48,11 @@ jobs:
     steps:
       - name: Get PR Commit authors
         id: authors
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           NICKNAMES=$(gh api /repos/${{ github.repository }}/pulls/${{ needs.get-pr.outputs.number }}/commits \
             --jq '[.[].author.login | select(.)] | unique')
           echo "nicknames=$NICKNAMES" >> "$GITHUB_OUTPUT"
       - name: Bind PR assignees
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           ASSIGNEES=()
           for assignees in $(echo '${{ steps.authors.outputs.nicknames }}' | jq -r .[]); do
