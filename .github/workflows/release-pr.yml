@@ -19,10 +19,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          NUMBER=$(gh pr list \
-            -H develop \
-            -B main \
-            --json number \
+          NUMBER=$(gh api /repos/${{ github.repository }}/pulls \
+            -f head=akfakf0509:develop \
+            -f base=main \
+            -f state=open \
+            -X GET \
             --jq .[0].number)
           echo "number=$NUMBER" >> "$GITHUB_OUTPUT"
       - name: Create Release PR if not exist
