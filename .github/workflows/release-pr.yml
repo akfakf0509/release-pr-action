@@ -13,8 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 깃허브 CLI
-        
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          gh api /repos/${{ github.repository }}/pulls -f 'base=main' -f 'head=akfakf0509:develop' --jq .[0].number
+        run: echo "pr-number=$(gh api /repos/${{ github.repository }}/pulls -X GET -f base=main -f head=akfakf0509:develop --jq '.[0].number')" >> $GITHUB_OUTPUT
