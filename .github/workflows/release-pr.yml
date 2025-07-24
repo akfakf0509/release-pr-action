@@ -21,6 +21,7 @@ jobs:
             -f head=akfakf0509:develop \
             -f base=main \
             -f state=open \
+            --method GET
             --jq .[0].number)
           echo "pr-number=$pr-number" >> $GITHUB_OUTPUT
       - name: Create Release PR if not exist
