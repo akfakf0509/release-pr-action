@@ -12,7 +12,7 @@ jobs:
   get-pr:
     runs-on: ubuntu-latest
     outputs:
-      number: ${{ steps.result.number }}
+      number: ${{ steps.result.outputs.number }}
     steps:
       - name: Get Release PR
         id: get
