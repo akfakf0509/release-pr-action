@@ -31,9 +31,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           PR_NUMBER=$(gh api /repos/${{ github.repository }}/pulls \
-          -f title="release: New features and fixes" \
-          -f head=develop \
-          -f base=main)
+            -f title="release: New features and fixes" \
+            -f head=develop \
+            -f base=main
+            --jq .number)
           echo "pr-number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
       - name: Echo result PR number
         run: |
