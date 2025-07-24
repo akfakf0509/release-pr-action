@@ -23,7 +23,7 @@ jobs:
             -f state=open \
             --method GET \
             --jq .[0].number)
-          echo "pr-number=$pr-number" >> $GITHUB_OUTPUT
+          echo "pr-number=$pr-number" >> "$GITHUB_OUTPUT"
       - name: Create Release PR if not exist
         id: create-pr
         if: ${{ !github.steps.get-pr.outputs.pr-number }}
@@ -34,7 +34,7 @@ jobs:
           -f title="release: New features and fixes" \
           -f head=develop
           -f base=main)
-          echo "pr-number=$pr-number" >> $GITHUB_OUTPUT
+          echo "pr-number=$pr-number" >> "$GITHUB_OUTPUT"
       - name: Echo result PR number
         run: |
           echo "get-pr.pr-number: ${{ github.steps.get-pr.outputs.pr-number }}"
