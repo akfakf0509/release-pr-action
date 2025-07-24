@@ -59,10 +59,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          ASSIGNEES=()
-          for nickname in $(echo ${{ steps.authors.outputs.nicknames }} | jq -r .[]); do
-            ASSIGNEES+=(-f "assignees[]=$nickname")
-          done
           gh api /repos/${{ github.repository }}/issues/${{ needs.get-pr.outputs.number }}/assignees \
-            --input {assignees=${{ steps.authors.outputs.nicknames }}} \
+            --input '{assignees=${{ steps.authors.outputs.nicknames }}}' \
             -X POST
