@@ -16,16 +16,10 @@ jobs:
     steps:
       - name: Get Release PR
         id: get
-        env:
-          GH_TOKEN: ${{ github.token }}
+        # env:
+        #   GH_TOKEN: ${{ github.token }}
         run: |
-          NUMBER=$(gh api /repos/${{ github.repository }}/pulls \
-            -f head=akfakf0509:develop \
-            -f base=main \
-            -f state=open \
-            -X GET \
-            --jq .[0].number)
-          echo "number=$NUMBER" >> "$GITHUB_OUTPUT"
+          gh pr list
       - name: Create Release PR if not exist
         id: create
         if: ${{ !steps.get.outputs.number }}
