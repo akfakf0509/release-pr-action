@@ -17,25 +17,25 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          pr-number=$(gh api /repos/${{ github.repository }}/pulls \
+          PR_NUMBER=$(gh api /repos/${{ github.repository }}/pulls \
             -f head=akfakf0509:develop \
             -f base=main \
             -f state=open \
             --method GET \
             --jq .[0].number)
-          echo "pr-number=$pr-number" >> "$GITHUB_OUTPUT"
+          echo "pr-number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
       - name: Create Release PR if not exist
         id: create-pr
-        if: ${{ !github.steps.get-pr.outputs.pr-number }}
+        if: ${{ !steps.get-pr.outputs.pr-number }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          pr-number=$(gh api /repos/${{ github.repository }}/pulls \
+          PR_NUMBER=$(gh api /repos/${{ github.repository }}/pulls \
           -f title="release: New features and fixes" \
           -f head=develop
           -f base=main)
-          echo "pr-number=$pr-number" >> "$GITHUB_OUTPUT"
+          echo "pr-number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
       - name: Echo result PR number
         run: |
-          echo "get-pr.pr-number: ${{ github.steps.get-pr.outputs.pr-number }}"
-          echo "create-pr.pr-number: ${{ github.steps.create-pr.outputs.pr-number }}"
+          echo "get-pr.pr-number: ${{ steps.get-pr.outputs.pr-number }}"
+          echo "create-pr.pr-number: ${{ steps.create-pr.outputs.pr-number }}"
