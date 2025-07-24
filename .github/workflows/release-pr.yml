@@ -23,7 +23,7 @@ jobs:
             -f head=akfakf0509:develop \
             -f base=main \
             -f state=open \
-            --method GET \
+            -X GET \
             --jq .[0].number)
           echo "number=$NUMBER" >> "$GITHUB_OUTPUT"
       - name: Create Release PR if not exist
@@ -36,6 +36,7 @@ jobs:
             -f title="release: New features and fixes" \
             -f head=develop \
             -f base=main \
+            -X POST \
             --jq .number)
           echo "number=$NUMBER" >> "$GITHUB_OUTPUT"
       - name: Get Result PR number
@@ -59,4 +60,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh api /repos/${{ github.repository }}/issues/${{ needs.get-pr.outputs.number }}/assignees \
-            -f assignees=${{ steps.authors.outputs.nicknames }}
+            -f assignees=${{ steps.authors.outputs.nicknames }} \
+            -X POST
