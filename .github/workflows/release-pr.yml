@@ -60,5 +60,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh api /repos/${{ github.repository }}/issues/${{ needs.get-pr.outputs.number }}/assignees \
-            -f assignees=${{ steps.authors.outputs.nicknames }} \
+            -F assignees=${{ steps.authors.outputs.nicknames }} \
             -X POST
