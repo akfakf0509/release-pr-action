@@ -22,7 +22,8 @@ jobs:
           NUMBER=$(gh pr list \
             -H develop \
             -B main \
-            -q .[0].number)
+            --json number \
+            --jq .[0].number)
           echo "number=$NUMBER" >> "$GITHUB_OUTPUT"
       - name: Create Release PR if not exist
         id: create
