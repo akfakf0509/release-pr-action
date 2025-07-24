@@ -17,4 +17,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh api /repos/${{ github.repository }}/pulls -XGET -f 'base=main' -f 'head=akfakf0509:develop' --jq .[0].number
+          gh api /repos/${{ github.repository }}/pulls -f 'base=main' -f 'head=akfakf0509:develop' --jq .[0].number
