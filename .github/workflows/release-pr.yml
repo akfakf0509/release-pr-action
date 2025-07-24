@@ -12,7 +12,29 @@ jobs:
   create_release_pr:
     runs-on: ubuntu-latest
     steps:
-      - name: 깃허브 CLI
+      - name: Get Release PR
+        id: get-pr
         env:
           GH_TOKEN: ${{ github.token }}
-        run: echo "pr-number=$(gh api /repos/${{ github.repository }}/pulls -X GET -f base=main -f head=akfakf0509:develop --jq '.[0].number')" >> $GITHUB_OUTPUT
+        run: |
+          pr-number=$(gh api /repos/${{ github.repository }}/pulls \
+            -f head=akfakf0509:develop \
+            -f base=main \
+            -f state=open \
+            --jq .[0].number)
+          echo "pr-number=$pr-number" >> $GITHUB_OUTPUT
+      - name: Create Release PR if not exist
+        id: create-pr
+        if: ${{ !github.steps.get-pr.outputs.pr-number }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pr-number=$(gh api /repos/${{ github.repository }}/pulls \
+          -f title="release: New features and fixes" \
+          -f head=develop
+          -f base=main)
+          echo "pr-number=$pr-number" >> $GITHUB_OUTPUT
+      - name: Echo result PR number
+        run: |
+          echo "get-pr.pr-number: ${{ github.steps.get-pr.outputs.pr-number }}"
+          echo "create-pr.pr-number: ${{ github.steps.create-pr.outputs.pr-number }}"
