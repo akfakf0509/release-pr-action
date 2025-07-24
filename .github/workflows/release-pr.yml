@@ -35,7 +35,7 @@ jobs:
           NUMBER=$(gh api /repos/${{ github.repository }}/pulls \
             -f title="release: New features and fixes" \
             -f head=develop \
-            -f base=main
+            -f base=main \
             --jq .number)
           echo "number=$NUMBER" >> "$GITHUB_OUTPUT"
       - name: Get Result PR number
