@@ -53,14 +53,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           NICKNAMES=$(gh api /repos/${{ github.repository }}/pulls/${{ needs.get-pr.outputs.number }}/commits \
-            --jq '[.[].author.login | select(.)] | unique | .[]')
+            --jq '[.[].author.login | select(.)] | unique')
           echo "nicknames=$NICKNAMES" >> "$GITHUB_OUTPUT"
       - name: Bind PR assignees
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           ASSIGNEES=()
-          for assignees in ${{ steps.authors.outputs.nicknames }}; do
+          for assignees in $(echo ${{ steps.authors.outputs.nicknames }} | jq -r .[]); do
             ASSIGNEES+=(-f "assignees[]=$assignees")
           done
           gh api /repos/${{ github.repository }}/issues/${{ needs.get-pr.outputs.number }}/assignees \
