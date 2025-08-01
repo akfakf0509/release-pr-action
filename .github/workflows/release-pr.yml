@@ -32,4 +32,5 @@ jobs:
             -f title="release: New features and fixes" \
             -f head=develop \
             -f base=main \
+            -f draft=true \
             -X POST)
