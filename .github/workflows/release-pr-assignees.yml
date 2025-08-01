@@ -2,10 +2,8 @@ name: Bind release PR assignees
 
 on:
   pull_request:
-    branches:
-      - main
     types:
-      - opened
+      - created
       - synchronize
 
 permissions:
