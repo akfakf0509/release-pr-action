@@ -3,7 +3,7 @@ name: Bind release PR assignees
 on:
   pull_request:
     types:
-      - created
+      - opened
       - synchronize
 
 permissions:
