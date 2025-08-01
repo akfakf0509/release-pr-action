@@ -1,0 +1,35 @@
+name: Bind release PR assignees
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+
+permissions:
+  pull-requests: write
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  assign-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get PR Commit authors
+        id: authors
+        run: |
+          NICKNAMES=$(gh api /repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/commits \
+            --jq '[.[] | select(.author.type == "User") | .author.login] | unique')
+          echo "nicknames=$NICKNAMES" >> "$GITHUB_OUTPUT"
+      - name: Bind PR assignees
+        run: |
+          ASSIGNEES=()
+          for assignees in $(echo '${{ steps.authors.outputs.nicknames }}' | jq -r .[]); do
+            ASSIGNEES+=(-f "assignees[]=$assignees")
+          done
+          gh api /repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/assignees \
+            ${ASSIGNEES[@]} \
+            -X POST
